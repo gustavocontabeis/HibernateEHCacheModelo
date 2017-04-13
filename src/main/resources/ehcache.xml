@@ -19,7 +19,7 @@
 	</defaultCache>
 
 	<cache 
-		name="employee" 
+		name="pessoa" 
 		maxEntriesLocalHeap="10000" 
 		eternal="false"
 		timeToIdleSeconds="5" 
