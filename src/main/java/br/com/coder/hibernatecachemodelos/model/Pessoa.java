@@ -14,7 +14,7 @@ import org.hibernate.annotations.Cascade;
 
 @Entity
 @Table(name = "pessoa")
-@Cache(usage=CacheConcurrencyStrategy.READ_ONLY, region="pessoa")
+@Cache(usage=CacheConcurrencyStrategy.READ_WRITE, region="minhaRegiaoCache")
 public class Pessoa {
 
 	@Id

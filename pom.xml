@@ -6,6 +6,10 @@
 	<artifactId>HibernateEhCacheModelos</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<description>Cache secundário com Hibernate</description>
+	
+	<properties>
+		<version.org.hibernate>4.3.5.Final</version.org.hibernate>
+	</properties>
 
 	<dependencies>
 	
@@ -13,7 +17,7 @@
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
-			<version>4.3.5.Final</version>
+			<version>${version.org.hibernate}</version>
 		</dependency>
 		
 		<!-- Postgre Driver -->
@@ -34,7 +38,7 @@
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-ehcache</artifactId>
-			<version>4.3.5.Final</version>
+			<version>${version.org.hibernate}</version>
 		</dependency>
 		
 		<!-- EHCache uses slf4j for logging -->

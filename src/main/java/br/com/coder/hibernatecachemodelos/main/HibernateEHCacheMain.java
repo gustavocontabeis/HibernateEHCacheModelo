@@ -1,5 +1,7 @@
 package br.com.coder.hibernatecachemodelos.main;
 
+import java.util.List;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -33,29 +35,67 @@ public class HibernateEHCacheMain {
 		
 		printStats(stats, 0);
 		
+		//Executa query
 		Pessoa pessoa = (Pessoa) session.load(Pessoa.class, 1L);
 		printData(pessoa, stats, 1);
 		
+		//Não executa query
 		pessoa = (Pessoa) session.load(Pessoa.class, 1L);
 		printData(pessoa, stats, 2);
 		
 		//clear first level cache, so that second level cache is used
+		//Limpa o cache de primeiro nível. Agora é o cache de segundo nível que é utilizado.
 		session.evict(pessoa);
 		
 		System.out.println("\nEvict");
 		
+		//Executa query pois o cache foi limpo
 		pessoa = (Pessoa) session.load(Pessoa.class, 1L);
 		printData(pessoa, stats, 3);
 		
+		//Executa query pois o 3 não foi carregado.
 		pessoa = (Pessoa) session.load(Pessoa.class, 3L);
 		printData(pessoa, stats, 4);
 		
+		//Executa query pois é outra sessão
 		pessoa = (Pessoa) otherSession.load(Pessoa.class, 1L);
 		printData(pessoa, stats, 5);
+		
+		//Não executa query
+		pessoa = (Pessoa) session.load(Pessoa.class, 1L);
+		printData(pessoa, stats, 6);
 		
 		//Release resources
 		transaction.commit();
 		otherTransaction.commit();
+		
+		/* Testa updates */
+		
+		session = sessionFactory.openSession();
+		transaction = session.beginTransaction();
+		
+		pessoa = (Pessoa) session.load(Pessoa.class, 1L);
+		pessoa.setNome("Gustavo-2");
+		session.update(pessoa);
+		transaction.commit();
+		
+		//Não faz select. Pega do cache
+		pessoa = (Pessoa) session.load(Pessoa.class, 1L);
+		printData(pessoa, stats, 7);
+
+		//Não deve fazer select
+		pessoa = (Pessoa) session.load(Pessoa.class, 1L);
+		printData(pessoa, stats, 8);
+		
+		//Aqui é para fazer query
+		List<Pessoa> list = session.createCriteria(Pessoa.class).list();
+		
+		for (Pessoa object : list) {
+			/* O load não deve fazer query pois a query acima carregou todos para o cache */
+			Pessoa load = (Pessoa) session.load(Pessoa.class, object.getId());
+			System.out.println(load);
+		}
+
 		sessionFactory.close();
 	}
 	
@@ -83,10 +123,10 @@ public class HibernateEHCacheMain {
 
 	private static void printStats(Statistics stats, int i) {
 		System.out.println("***** " + i + " *****");
-		System.out.println("Fetch Count=" + stats.getEntityFetchCount());
-		System.out.println("Cache Hit Count=" + stats.getSecondLevelCacheHitCount());
-		System.out.println("Cache Miss Count=" + stats.getSecondLevelCacheMissCount());
-		System.out.println("Cache Put Count=" + stats.getSecondLevelCachePutCount());
+		System.out.println("Fetch Count=" + stats.getEntityFetchCount());//Get global number of entity fetchs
+		System.out.println("Cache Hit Count=" + stats.getSecondLevelCacheHitCount()); //Global number of cacheable entities/collections successfully retrieved from the cache
+		System.out.println("Cache Miss Count=" + stats.getSecondLevelCacheMissCount());// Global number of cacheable entities/collections not found in the cache and loaded from the database.
+		System.out.println("Cache Put Count=" + stats.getSecondLevelCachePutCount());//Global number of cacheable entities/collections put in the cache
 		System.out.println();
 	}
 

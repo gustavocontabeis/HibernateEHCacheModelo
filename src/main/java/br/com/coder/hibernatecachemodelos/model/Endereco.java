@@ -15,7 +15,7 @@ import org.hibernate.annotations.Parameter;
 
 @Entity
 @Table(name = "endereco")
-@Cache(usage=CacheConcurrencyStrategy.READ_ONLY, region="pessoa")
+@Cache(usage=CacheConcurrencyStrategy.READ_WRITE, region="minhaRegiaoCache")
 public class Endereco {
 
 	@Id
